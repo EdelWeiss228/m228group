@@ -9,7 +9,7 @@ typedef struct level {
 
 
 bool tree::TreeIterator::goToParent(){
-    return false;
+    return true;
 }
 
 bool tree::TreeIterator::goToChild(int child_index){
