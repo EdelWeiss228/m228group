@@ -3,7 +3,7 @@
 #include "ListAbstract.h"
 #include <list>
 
-const size_t ELEMSIZE = sizeof(int*);
+const size_t ELEMSIZE = sizeof(int);
 
 using TList = list<void*>;
 
@@ -21,7 +21,7 @@ public:
         memcpy(newElem, elem, ELEMSIZE);
 
         m_list->push_front(newElem);
-        
+
         return 0;
     }
 
@@ -43,7 +43,9 @@ public:
         void *getElement(size_t &size) { size = ELEMSIZE; return *it; }
 
         bool hasNext() {
-            if (++it == l->end()) {
+            it++;
+
+            if (it == l->end()) {
                 --it;
                 return false;
             } else {
@@ -52,7 +54,7 @@ public:
             }
         }
 
-        void goToNext() { if (it != l->end()) it++; }
+        void goToNext() { it++; }
 
         bool equals(Iterator *right) {
             ListIterator *r = dynamic_cast<ListIterator*>(right);
@@ -73,10 +75,16 @@ public:
 
     Iterator *find(void *elem, size_t size) {
         ListIterator* it = new ListIterator(m_list);
+        size_t _size = ELEMSIZE;
 
-        size_t _size;
+
         while (it->it != m_list->end()) {
-            if (_size == size && memcmp(it->getElement(_size), elem, _size) == 0) {
+            int t = *((int*)it->getElement(_size));
+            int t2 = *((int*)elem);
+
+            // printf("now: %d ?= %d\n", t, t2);
+
+            if (memcmp(it->getElement(_size), elem, _size/2) == 0) {
                 return it;
             }
 
