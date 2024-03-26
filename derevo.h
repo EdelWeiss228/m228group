@@ -4,7 +4,6 @@
 class tree: public AbstractTree{
     public:
         tree(MemoryManager &mem): AbstractTree(mem) {}
-
         ~tree() {}
 
         class TreeIterator: public AbstractTree::Iterator{
