@@ -89,7 +89,6 @@ mem_handle_t allocMem(int block_size) {
     count++;
     real_size += block_size;
     return array[count - 1];
-
 }
 
 int freeMem(mem_handle_t h) {
