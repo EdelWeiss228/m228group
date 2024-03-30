@@ -2,12 +2,6 @@
 #include "List.h"
 using namespace std;
 
-typedef struct level {
-    int color;
-    list <list<void*>> child;
-} level;
-
-
 bool tree::TreeIterator::goToParent(){
     return true;
 }
