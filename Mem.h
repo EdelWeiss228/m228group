@@ -31,7 +31,6 @@ public:
     virtual void freeMem(void* ptr);
 
 private:
-    virtual mem_handle get_block(int addr, int size);
     virtual int get_max_block_size();
     virtual int get_free_space();
     virtual void print_blocks();
