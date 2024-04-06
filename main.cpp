@@ -3,6 +3,6 @@
 
 int main(){
     Mem mm(999);
-    tree *derevo = new tree(mm);
+    tree *derevo = new tree(mm)
     return 0;
 }
