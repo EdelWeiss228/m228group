@@ -1,41 +1,23 @@
 #include "Mem.h"
 #include "iostream"
 
-size_t full_size = -1, real_size = 0, count = 0;
-typedef Mem::mem_handle_t mem_handle_t;
-mem_handle_t* array_of_blocks = NULL;
-void* array_of_elements = NULL;
-
-Mem::Mem(size_t size):MemoryManager(size) {
-    full_size = size;
-    array_of_elements = (char*)malloc(sizeof(char)*size);
-}
-
-Mem::~Mem(){
-    if (array_of_blocks != NULL){
-        free(array_of_blocks);
-        array_of_blocks = NULL;
-        free(array_of_elements);
-        array_of_elements = NULL;
-    }
-    full_size = -1;
-}
+typedef Mem::mem_handle mem_handle_t;
 
 void* Mem::allocMem(size_t block_size) {
-    if (full_size == -1){
-        //return mem_handle_t(0, 0);
-        //сюда надо поставить эксепш
-    }
-    if (full_size - real_size < block_size)   {
-        //return mem_handle_t(0, 0);
-        //сюда он нужон тоже
-    }
+    // if (full_size == -1){
+    //     //return mem_handle_t(0, 0);
+    //     //сюда надо поставить эксепш
+    // }
+    // if (full_size - real_size < block_size)   {
+    //     //return mem_handle_t(0, 0);
+    //     //сюда он нужон тоже
+    // }
     mem_handle_t* time_array = array_of_blocks; 
     for (int i = 0; i < count; i++) {
 
         if (array_of_blocks[i].addr == -1 && array_of_blocks[i].size == -1) {
             int curblocksize = (i == 0) ? 0 : (array_of_blocks[i - 1].addr + array_of_blocks[i - 1].size);
-            int size_of_corent_bloc = (i == count - 1) ? (real_size - curblocksize) : array_of_blocks[i + 1].addr - curblocksize;//���� ���� ������ ����
+            int size_of_corent_bloc = (i == count - 1) ? (real_size - curblocksize) : array_of_blocks[i + 1].addr - curblocksize;
             if (size_of_corent_bloc >= block_size)
             {
                 mem_handle_t t((i == 0) ? 0 : array_of_blocks[i - 1].addr + array_of_blocks[i - 1].size,block_size);

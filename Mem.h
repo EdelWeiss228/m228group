@@ -4,24 +4,37 @@
 class Mem: public MemoryManager
 {    
 public:
-    typedef struct mem_handle_t{
+    size_t full_size = -1, real_size = 0, count = 0;
+    typedef struct mem_handle{
         int addr;
         int size;
-        mem_handle_t(int addr, int size) :
+        mem_handle(int addr, int size) :
         addr(addr),
         size(size)
         {}
-        bool operator==(const mem_handle_t& other) { return other.addr == addr && other.size == size; }
-        bool operator!=(const mem_handle_t& other) { return !operator==(other); }
+        bool operator==(const mem_handle& other) { return other.addr == addr && other.size == size; }
+        bool operator!=(const mem_handle& other) { return !operator==(other); }
     };
-    Mem(size_t sz): MemoryManager(sz) {}
-    ~Mem(){}
+
+    Mem(size_t sz): MemoryManager(sz) {full_size=sz;}
+
+    ~Mem(){
+    if (array_of_blocks != NULL){
+        free(array_of_blocks);
+        array_of_blocks = NULL;
+        free(array_of_elements);
+        array_of_elements = NULL;
+    }
+    full_size = -1;
+    }
     virtual void* allocMem(size_t sz);
     virtual void freeMem(void* ptr);
-    bool operator=(const int& addr){}
+
 private:
-    virtual mem_handle_t get_block(int addr, int size);
+    virtual mem_handle get_block(int addr, int size);
     virtual int get_max_block_size();
     virtual int get_free_space();
     virtual void print_blocks();
+    mem_handle* array_of_blocks = NULL;
+    char* array_of_elements = NULL;
 };
