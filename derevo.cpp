@@ -2,14 +2,6 @@
 #include "List.h"
 using namespace std;
 
-bool tree::TreeIterator::goToParent(){
-    return true;
-}
-
-bool tree::TreeIterator::goToChild(int child_index){
-    return true;
-}
-
 int tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
     return 1;
 }
@@ -46,6 +38,14 @@ bool tree::empty(){
     return true;
 }
 
+bool tree::TreeIterator::goToParent(){
+    return true;
+}
+
+bool tree::TreeIterator::goToChild(int child_index){
+    return true;
+}
+
 void* tree::TreeIterator::getElement(size_t &size){
 
 }
@@ -58,6 +58,6 @@ void tree::TreeIterator::goToNext(){
 
 }
 
-bool tree::TreeIterator:: equals(Iterator *right){
+bool tree::TreeIterator::equals(Iterator *right){
     return true;
 }
