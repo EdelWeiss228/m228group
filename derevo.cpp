@@ -33,20 +33,30 @@ tree::Iterator* tree::find(void *elem, size_t size){
 tree:: Iterator* tree::newIterator(){
     return 0;
 }
+
 void tree::remove(Container::Iterator *iter){
     //return;
 }
+
 void tree::clear(){
     //return;
 }
+
 bool tree::empty(){
     return true;
 }
-void* tree::TreeIterator::getElement(size_t &size){}
+
+void* tree::TreeIterator::getElement(size_t &size){
+
+}
+
 bool tree::TreeIterator::hasNext(){
     return true;
 }
-void tree::TreeIterator::goToNext(){}
+void tree::TreeIterator::goToNext(){
+
+}
+
 bool tree::TreeIterator:: equals(Iterator *right){
     return true;
 }
