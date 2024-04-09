@@ -42,11 +42,11 @@ void tree::clear(){
 bool tree::empty(){
     return true;
 }
-void* Container::Iterator::getElement(size_t &size){}
-bool Container::Iterator::hasNext(){
+void* tree::TreeIterator::getElement(size_t &size){}
+bool tree::TreeIterator::hasNext(){
     return true;
 }
-void Container::Iterator::goToNext(){}
-bool Container::Iterator:: equals(Iterator *right){
+void tree::TreeIterator::goToNext(){}
+bool tree::TreeIterator:: equals(Iterator *right){
     return true;
 }
