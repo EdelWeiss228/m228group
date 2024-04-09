@@ -53,6 +53,7 @@ void* tree::TreeIterator::getElement(size_t &size){
 bool tree::TreeIterator::hasNext(){
     return true;
 }
+
 void tree::TreeIterator::goToNext(){
 
 }
