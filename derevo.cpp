@@ -11,11 +11,11 @@ bool tree::remove(Iterator *iter, int leaf_only){
 }
 
 int tree::size(){
-    return 0;
+    return size();
 }
 
 size_t tree::max_bytes(){
-    return 0;
+    return size();
 }
 
 tree::Iterator* tree::find(void *elem, size_t size){
@@ -23,15 +23,15 @@ tree::Iterator* tree::find(void *elem, size_t size){
 }
 
 tree:: Iterator* tree::newIterator(){
-    return 0;
+    return new TreeIterator();
 }
 
 void tree::remove(Container::Iterator *iter){
-    //return;
+
 }
 
 void tree::clear(){
-    //return;
+
 }
 
 bool tree::empty(){
@@ -47,17 +47,17 @@ bool tree::TreeIterator::goToChild(int child_index){
 }
 
 void* tree::TreeIterator::getElement(size_t &size){
-
+    listIterator->getElement(size);
 }
 
 bool tree::TreeIterator::hasNext(){
-    return true;
+    return listIterator->hasNext();
 }
 
 void tree::TreeIterator::goToNext(){
-
+    listIterator->goToNext();
 }
 
 bool tree::TreeIterator::equals(Iterator *right){
-    return true;
+    return listIterator->equals(right);
 }
