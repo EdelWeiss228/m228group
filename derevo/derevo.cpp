@@ -58,6 +58,6 @@ void tree::TreeIterator::goToNext(){
     listIterator->goToNext();
 }
 
-bool tree::TreeIterator::equals(Iterator *right){
+bool tree::TreeIterator::equals(Container::Iterator *right){
     return listIterator->equals(right);
 }

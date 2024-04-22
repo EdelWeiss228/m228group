@@ -2,31 +2,40 @@
 #include "TreeAbstract.h"
 
 typedef struct Node{
-    
+    void* leaf;
+    list<void*> children;
+    int index;
 };
 
 class tree: public AbstractTree{
-private:
-tree* Tree;
+
+    private:
+    List::Iterator* newListIterator(size_t& listPosition, bool toBegin);
+
     public:
         tree(MemoryManager &mem): AbstractTree(mem) {}
         ~tree() {}
 
         class TreeIterator: public AbstractTree::Iterator{
             private:
+            tree* Tree;
             Iterator* listIterator;
-            TTree *l;
-            TTree::iterator it;
+            size_t listPosition;
 
             public:
 
-            TreeIterator(TList *l) : l(l), it(l->begin()) {}
+            TreeIterator(tree* Tree, Iterator* it, size_t listPosition): listIterator(it), Tree(Tree), listPosition(listPosition){};
+            ~TreeIterator(){if(listIterator) Tree->_memory.freeMem(listIterator);}
             bool goToParent();
             bool goToChild(int child_index);
             void* getElement(size_t &size);
             bool hasNext();
             void goToNext();
-            bool equals(Iterator *right);
+            bool equals(Container:: Iterator *right);
+
+            const bool operator==(Container:: Iterator *right){
+                return equals(right);
+            }
         };
 
         int insert(Iterator *iter, int child_index, void *elem, size_t size);
