@@ -1,5 +1,4 @@
 #include "derevo.h"
-#include "List.h"
 using namespace std;
 
 int tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
@@ -23,7 +22,8 @@ tree::Iterator* tree::find(void *elem, size_t size){
 }
 
 tree:: Iterator* tree::newIterator(){
-    return new TreeIterator();
+    //return new TreeIterator(this, 0);
+    return nullptr;
 }
 
 void tree::remove(Container::Iterator *iter){

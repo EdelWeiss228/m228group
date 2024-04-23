@@ -1,9 +1,10 @@
 #pragma once
 #include "TreeAbstract.h"
+#include "MyList.h"
 
 typedef struct Node{
     void* leaf;
-    list<void*> children;
+    List children;
     int index;
 };
 
@@ -24,7 +25,7 @@ class tree: public AbstractTree{
 
             public:
 
-            TreeIterator(tree* Tree, Iterator* it, size_t listPosition): listIterator(it), Tree(Tree), listPosition(listPosition){};
+            TreeIterator(tree* Tree, Iterator* iterator, size_t listPosition): listIterator(iterator), Tree(Tree), listPosition(listPosition){};
             ~TreeIterator(){if(listIterator) Tree->_memory.freeMem(listIterator);}
             bool goToParent();
             bool goToChild(int child_index);
