@@ -43,7 +43,7 @@ List::ListIterator* List::find(void* elem, size_t size)
 				if (size == current_elem->obj_size &&
 					!memcmp(elem, current_elem->object, size))
 				{
-					(*iter_ptr).List::ListIterator::ListIterator(current_elem);
+					(*iter_ptr).List::ListIterator(current_elem);
 					return iter_ptr;
 				}
 				current_elem = current_elem->next_ptr;
@@ -64,7 +64,7 @@ List::ListIterator* List::newIterator()
 		ListIterator* iter_ptr = (ListIterator*)List::_memory.allocMem(sizeof(ListIterator));
 		if (iter_ptr)
 		{
-			iter_ptr->List::ListIterator::ListIterator(list_head);
+			iter_ptr->List::ListIterator(list_head);
 			return iter_ptr;
 		}
 		else
@@ -197,11 +197,11 @@ bool List::ListIterator::equals(Iterator* right)
 
 int List::push_front(void* elem, size_t elemSize)
 {
-	if (!list_head)//если контейнер пуст
+	if (!list_head)//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	{
 		if (elemSize > 0 && elem)
 		{
-			//не забыть исправить тип
+			//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			list_head = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 			if (list_head)
 			{
@@ -216,7 +216,7 @@ int List::push_front(void* elem, size_t elemSize)
 			}
 		}
 	}
-	else// если в нём есть элементы
+	else// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
@@ -275,11 +275,11 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 			ListIterator* current_elem = List::newIterator();
 			if (current_elem)
 			{
-				if (iterator->equals(current_elem))// если добавляем в начало списка
+				if (iterator->equals(current_elem))// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				{
 					return push_front(elem, elemSize);
 				}
-				else// если добавляем не в начало
+				else// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				{
 					ListIterator* previous_elem = List::newIterator();
 					if (previous_elem)
