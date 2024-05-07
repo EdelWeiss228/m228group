@@ -2,8 +2,6 @@
 #include "TreeAbstract.h"
 #include "List.h"
 
-
-
 class Tree: public AbstractTree{
 
     public:

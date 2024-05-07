@@ -6,6 +6,6 @@ using namespace std;
 int main(){
     Mem mm(999);
     cout<<mm.size();
-    tree *derevo = new tree(mm);
+    Tree *derevo = new Tree(mm);
     return 0;
 }
