@@ -65,6 +65,7 @@ void* Mem::allocMem(size_t block_size) {
     // count++;
     // real_size += block_size;
     // return array_of_elements[array_of_blocks[count - 1].addr];
+    return new char[block_size];
 }
 
 void Mem::freeMem(void*ptr) {
@@ -84,6 +85,7 @@ void Mem::freeMem(void*ptr) {
     // real_size -= h.size;
     // if (flag == false) { return false; }
     // return true;
+    delete[] ptr;
 }
 
 int Mem::get_max_block_size() {
