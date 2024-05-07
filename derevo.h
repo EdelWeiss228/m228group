@@ -1,22 +1,25 @@
 #pragma once
 #include "TreeAbstract.h"
-#include "MyList.h"
+#include "List.h"
 
-typedef struct Node{
-    void* leaf;
-    List children;
-    int index;
-};
+
 
 class Tree: public AbstractTree{
 
-    private:
-    Node* Root;
-    List::Iterator* newListIterator(size_t& listPosition, bool toBegin);
-
     public:
-        Tree(MemoryManager &mem): AbstractTree(mem) {}
+        Tree(MemoryManager &mem): AbstractTree(mem) {Root=nullptr;}
         ~Tree() {}
+
+        class Node{
+            public:
+            void* leaf;
+            List* children;
+            int index;
+            Node(void* value, MemoryManager& mem) {
+                children = new List(mem);
+                leaf = value;
+            }
+        };
 
         class TreeIterator: public AbstractTree::Iterator{
             private:
@@ -51,4 +54,9 @@ class Tree: public AbstractTree{
         void remove(Container::Iterator *iter);    //удаления вершины рекурсивно
         void clear();
         bool empty();
+
+    private:
+    Node* Root;
+    List::Iterator* newListIterator(size_t& listPosition, bool toBegin);
+
 };
