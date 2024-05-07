@@ -8,25 +8,26 @@ typedef struct Node{
     int index;
 };
 
-class tree: public AbstractTree{
+class Tree: public AbstractTree{
 
     private:
+    Node* Root;
     List::Iterator* newListIterator(size_t& listPosition, bool toBegin);
 
     public:
-        tree(MemoryManager &mem): AbstractTree(mem) {}
-        ~tree() {}
+        Tree(MemoryManager &mem): AbstractTree(mem) {}
+        ~Tree() {}
 
         class TreeIterator: public AbstractTree::Iterator{
             private:
-            tree* Tree;
+            Tree* tree;
             Iterator* listIterator;
             size_t listPosition;
 
             public:
 
-            TreeIterator(tree* Tree, Iterator* iterator, size_t listPosition): listIterator(iterator), Tree(Tree), listPosition(listPosition){};
-            ~TreeIterator(){if(listIterator) Tree->_memory.freeMem(listIterator);}
+            TreeIterator(Tree* tree, Iterator* iterator, size_t listPosition): listIterator(iterator), tree(tree), listPosition(listPosition){};
+            ~TreeIterator(){if(listIterator) tree->_memory.freeMem(listIterator);}
             bool goToParent();
             bool goToChild(int child_index);
             void* getElement(size_t &size);

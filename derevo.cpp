@@ -1,63 +1,63 @@
 #include "derevo.h"
 using namespace std;
 
-int tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
+int Tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
     return 1;
 }
 
-bool tree::remove(Iterator *iter, int leaf_only){
+bool Tree::remove(Iterator *iter, int leaf_only){
     return true;
 }
 
-int tree::size(){
+int Tree::size(){
     return size();
 }
 
-size_t tree::max_bytes(){
+size_t Tree::max_bytes(){
     return size();
 }
 
-tree::Iterator* tree::find(void *elem, size_t size){
+Tree::Iterator* Tree::find(void *elem, size_t size){
     return 0;
 }
 
-tree:: Iterator* tree::newIterator(){
+Tree:: Iterator* Tree::newIterator(){
     //return new TreeIterator(this, 0);
     return nullptr;
 }
 
-void tree::remove(Container::Iterator *iter){
+void Tree::remove(Container::Iterator *iter){
 
 }
 
-void tree::clear(){
+void Tree::clear(){
 
 }
 
-bool tree::empty(){
+bool Tree::empty(){
     return true;
 }
 
-bool tree::TreeIterator::goToParent(){
+bool Tree::TreeIterator::goToParent(){
     return true;
 }
 
-bool tree::TreeIterator::goToChild(int child_index){
+bool Tree::TreeIterator::goToChild(int child_index){
     return true;
 }
 
-void* tree::TreeIterator::getElement(size_t &size){
+void* Tree::TreeIterator::getElement(size_t &size){
     listIterator->getElement(size);
 }
 
-bool tree::TreeIterator::hasNext(){
+bool Tree::TreeIterator::hasNext(){
     return listIterator->hasNext();
 }
 
-void tree::TreeIterator::goToNext(){
+void Tree::TreeIterator::goToNext(){
     listIterator->goToNext();
 }
 
-bool tree::TreeIterator::equals(Container::Iterator *right){
+bool Tree::TreeIterator::equals(Container::Iterator *right){
     return listIterator->equals(right);
 }
