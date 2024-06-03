@@ -1,12 +1,11 @@
 #pragma once
+#include "List_1.h"
 #include "SetAbstract.h"
-#include "List.h"
-#include <list>
 
 const size_t initCapacity = 1000;
 
-class Set: public AbstractSet {
-private:
+class Set : public AbstractSet {
+   private:
     size_t m_capacity;
     size_t m_size;
     List** m_data;
@@ -17,27 +16,29 @@ private:
 
     void clearContainer();
 
-public:
-    Set(MemoryManager& mem): AbstractSet(mem),
-    m_size(0),
-    m_capacity(initCapacity) {
+   public:
+    Set(MemoryManager& mem)
+        : AbstractSet(mem), m_size(0), m_capacity(initCapacity) {
         m_data = (List**)_memory.allocMem(sizeof(List*) * m_capacity);
         clearContainer();
     }
 
-    ~Set() { clear(); _memory.freeMem(m_data); }
+    ~Set() {
+        clear();
+        _memory.freeMem(m_data);
+    }
 
-    class SetIterator: public AbstractSet::Iterator {
-    private:
+    class SetIterator : public AbstractSet::Iterator {
+       private:
         Iterator* listIt;
         Set* set;
         size_t listPos;
 
-    public:
-        SetIterator(Set* set, size_t listPos, bool toBegin = true):
-            set(set),
-            listPos(listPos),
-            listIt(set->newListIterator(listPos, toBegin)) {}
+       public:
+        SetIterator(Set* set, size_t listPos, bool toBegin = true)
+            : set(set),
+              listPos(listPos),
+              listIt(set->newListIterator(listPos, toBegin)) {}
 
         void* getElement(size_t& size);
 
