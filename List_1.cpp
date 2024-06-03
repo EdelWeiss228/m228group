@@ -1,14 +1,4 @@
-#include"MyList.h"
-
-List::List(MemoryManager& mem) : AbstractList(mem)
-{
-	list_head = NULL;
-}
-
-List::~List()
-{
-	if (list_head) List::clear();
-}
+#include"List_1.h"
 
 int List::size()
 {
@@ -30,7 +20,7 @@ size_t List::max_bytes()
 	return 0;
 }
 
-List::ListIterator* List::find(void* elem, size_t size)
+GroupList::Iterator* List::find(void* elem, size_t size)
 {
 	if (list_head && elem && size > 0)
 	{
@@ -43,7 +33,9 @@ List::ListIterator* List::find(void* elem, size_t size)
 				if (size == current_elem->obj_size &&
 					!memcmp(elem, current_elem->object, size))
 				{
-					(*iter_ptr).List::ListIterator(current_elem);
+					ListIterator new_iter(current_elem);
+					ListIterator* new_iter_ptr = &new_iter;
+					iter_ptr = (ListIterator*)memcpy(iter_ptr, new_iter_ptr, sizeof(ListIterator));
 					return iter_ptr;
 				}
 				current_elem = current_elem->next_ptr;
@@ -51,53 +43,57 @@ List::ListIterator* List::find(void* elem, size_t size)
 		}
 		else
 		{
-			//exception
+			Error err("Memory for iterator wasn`t allocated!");
+			throw err;
 		}
 	}
 	return NULL;
 }
 
-List::ListIterator* List::newIterator()
-{
-	if (list_head)
-	{
-		ListIterator* iter_ptr = (ListIterator*)List::_memory.allocMem(sizeof(ListIterator));
-		if (iter_ptr)
-		{
-			iter_ptr->List::ListIterator(list_head);
-			return iter_ptr;
-		}
-		else
-		{
-			//exception
-		}
-	}
-	return NULL;
-}
+//List::Iterator* List::newIterator()
+//{
+//	if (list_head)
+//	{
+//		ListIterator* iter_ptr = (ListIterator*)List::_memory.allocMem(sizeof(ListIterator));
+//		if (iter_ptr)
+//		{
+//			iter_ptr->List::ListIterator::ListIterator(list_head);
+//			return iter_ptr;
+//		}
+//		else
+//		{
+//			//exception
+//		}
+//	}
+//	return NULL;
+//}
 
 void List::remove(Iterator* iter)
 {
 	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
 	if (iterator)
 	{
-		ListIterator* current_elem = List::newIterator();
+		Iterator* bufer = List::newIterator();
+		ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 		if (current_elem)
 		{
 			if (iterator->equals(current_elem))	pop_front();
 			else
 			{
-				ListIterator* previous_elem = List::newIterator();
+				bufer = List::newIterator();
+				ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
 				if (previous_elem)
 				{
+					current_elem->goToNext();
 					do
 					{
-						current_elem->goToNext();
 						if (current_elem->equals(iterator))
 						{
 							List::_memory.freeMem(current_elem->ptr->object);
 							iterator->goToNext();
 							previous_elem->ptr->next_ptr = iterator->ptr;
 							List::_memory.freeMem(current_elem->ptr);
+							break;
 						}
 						else
 						{
@@ -109,99 +105,32 @@ void List::remove(Iterator* iter)
 				}
 				else
 				{
-					// exception
+					Error err("Dynamic cast error!");
+					throw err;
 				}
 			}
 			List::_memory.freeMem(current_elem);
 		}
 		else
 		{
-			// exception
+			Error err("Dynamic cast error!");
+			throw err;
 		}
 	}
 	else
 	{
-		// exception
-	}
-}
-
-void List::clear()
-{
-	if (list_head)
-	{
-		ListElem* current_elem = list_head;
-		do
-		{
-			List::_memory.freeMem(current_elem->object);
-			current_elem = current_elem->next_ptr;
-		} while (current_elem);
-		list_head = NULL;
-	}
-	else
-	{
-		//exception
-	}
-}
-
-bool List::empty()
-{
-	if (list_head)
-		return false;
-	return true;
-}
-
-void* List::ListIterator::getElement(size_t& size)
-{
-	if (ptr && ptr->object)
-	{
-		size = ptr->obj_size;
-		return ptr->object;
-	}
-	return NULL;
-}
-
-bool List::ListIterator::hasNext()
-{
-	if (ptr->next_ptr)
-		return true;
-	return false;
-}
-
-void List::ListIterator::goToNext()
-{
-	if (ptr)
-	{
-		ptr = ptr->next_ptr;
-	}
-	else
-	{
-		//exception
-	}
-}
-
-bool List::ListIterator::equals(Iterator* right)
-{
-	ListIterator* checking_iter = dynamic_cast<ListIterator*>(right);
-	if (checking_iter)
-	{
-		if (ptr == NULL || checking_iter->ptr == NULL) return ptr == checking_iter->ptr;
-		if (ptr->obj_size == checking_iter->ptr->obj_size &&
-			!memcmp(ptr->object, checking_iter->ptr->object, ptr->obj_size)) return  true;
-		else return false;
-	}
-	else
-	{
-		// exception
+		Error err("Dynamic cast error!");
+		throw err;
 	}
 }
 
 int List::push_front(void* elem, size_t elemSize)
 {
-	if (!list_head)//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	if (!list_head)//если контейнер пуст
 	{
 		if (elemSize > 0 && elem)
 		{
-			//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+			//не забыть исправить тип
 			list_head = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 			if (list_head)
 			{
@@ -216,7 +145,7 @@ int List::push_front(void* elem, size_t elemSize)
 			}
 		}
 	}
-	else// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	else// если в нём есть элементы
 	{
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
@@ -251,18 +180,14 @@ void List::pop_front()
 	}
 	else
 	{
-		//exception;
+		Error err("Container is empty!");
+		throw err;
 	}
 }
 
 void* List::front(size_t& size)
 {
-	if (list_head->object)
-	{
-		size = list_head->obj_size;
-		return list_head;
-	}
-	return NULL;
+	return group_list_front(size);
 }
 
 int List::insert(Iterator* iter, void* elem, size_t elemSize)
@@ -272,16 +197,18 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 	{
 		if (iterator->ptr)
 		{
-			ListIterator* current_elem = List::newIterator();
+			Iterator* bufer = List::newIterator();
+			ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 			if (current_elem)
 			{
-				if (iterator->equals(current_elem))// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+				if (iterator->equals(current_elem))// если добавляем в начало списка
 				{
 					return push_front(elem, elemSize);
 				}
-				else// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+				else// если добавляем не в начало
 				{
-					ListIterator* previous_elem = List::newIterator();
+					bufer = List::newIterator();
+					ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
 					if (previous_elem)
 					{
 						current_elem->goToNext();
