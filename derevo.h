@@ -9,6 +9,9 @@ class Tree: public AbstractTree{
         ~Tree() {}
 
         class Node{
+            private:
+            Tree* tree;
+
             public:
             void* leaf;
             List* children;
@@ -17,18 +20,40 @@ class Tree: public AbstractTree{
                 children = new List(mem);
                 leaf = value;
             }
+            ~Node() {
+                tree->_memory.freeMem(children);
+            }
         };
 
         class TreeIterator: public AbstractTree::Iterator{
             private:
             Tree* tree;
-            Iterator* listIterator;
+            
+            List::Iterator* listIterator;
             size_t listPosition;
 
-            public:
+            struct ParentInfo
+            {
+                Node* child;
+                Node* parent;
+            };
 
-            TreeIterator(Tree* tree, Iterator* iterator, size_t listPosition): listIterator(iterator), tree(tree), listPosition(listPosition){};
-            ~TreeIterator(){if(listIterator) tree->_memory.freeMem(listIterator);}
+            ParentInfo* parentArray;
+            size_t actualParentArraySize;
+            size_t fullParentArrayCap;
+
+            void resizeParentArray();
+
+            public:
+            Node* curNode;
+            TreeIterator(Tree* tree, Node* node, List::Iterator* iterator, size_t listPosition)
+                : tree(tree), curNode(node), listIterator(iterator), listPosition(listPosition){};
+            ~TreeIterator(){
+                if(listIterator)
+                    tree->_memory.freeMem(listIterator);
+                if(parentArray)
+                    tree->_memory.freeMem(parentArray);
+                }
             bool goToParent();
             bool goToChild(int child_index);
             void* getElement(size_t &size);
@@ -38,6 +63,24 @@ class Tree: public AbstractTree{
 
             const bool operator==(Container:: Iterator *right){
                 return equals(right);
+            }
+
+            void addParentInfo(Node* child, Node* parent){
+                if (actualParentArraySize==fullParentArrayCap)
+                    resizeParentArray();
+                parentArray[actualParentArraySize+1]={child, parent};
+                actualParentArraySize++;
+            }
+
+            Node* findParent(Node* child){
+                for (size_t i = 0; i < actualParentArraySize; i++)
+                {
+                    if(parentArray[i].child == child)
+                        return parentArray[i].parent;
+                    else
+                        return nullptr;
+                }
+                
             }
         };
 
