@@ -87,7 +87,7 @@ Tree:: Iterator* Tree::newIterator(){
 }
 
 void Tree::remove(Container::Iterator *iter){
-
+    
 }
 
 void Tree::clear(){
