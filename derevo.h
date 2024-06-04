@@ -28,8 +28,6 @@ class Tree: public AbstractTree{
         class TreeIterator: public AbstractTree::Iterator{
             private:
             Tree* tree;
-            
-            List::Iterator* listIterator;
             size_t listPosition;
 
             struct ParentInfo
@@ -46,6 +44,7 @@ class Tree: public AbstractTree{
 
             public:
             Node* curNode;
+            List::Iterator* listIterator;
             TreeIterator(Tree* tree, Node* node, List::Iterator* iterator, size_t listPosition)
                 : tree(tree), curNode(node), listIterator(iterator), listPosition(listPosition){};
             ~TreeIterator(){
@@ -92,12 +91,13 @@ class Tree: public AbstractTree{
         size_t max_bytes();
         Iterator* find(void *elem, size_t size);
         Iterator* newIterator(); 
+        void deleteSubtree(Node* node);
         void remove(Container::Iterator *iter);    //удаления вершины рекурсивно
         void clear();
         bool empty();
 
     private:
     Node* Root;
-    List::Iterator* newListIterator(size_t& listPosition, bool toBegin);
+    List::Iterator* newListIterator(Node* node, size_t& listPosition, bool toBegin);
 
 };

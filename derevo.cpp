@@ -20,12 +20,50 @@ void Tree::TreeIterator::resizeParentArray(){
 int Tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
     TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
     if(treeIter&&treeIter->curNode){
-        
+        Node* newNode = new Node(elem, _memory);
+        if (!newNode) return 1;
+        treeIter->curNode->children->insert(treeIter->listIterator, elem, size);
+        return 0;
     }
     return 1;
 }
 
+void Tree::deleteSubtree(Node* node){
+    if(!node) return;
+    size_t size;
+    List::Iterator* childIterator = node ->children->newIterator();
+    while (childIterator&&childIterator->hasNext()) {
+        Node* childNode = static_cast <Node*>(childIterator->getElement(size));
+        deleteSubtree(childNode);
+        childIterator->goToNext();
+    }
+    delete node->children;
+    _memory.freeMem(node->leaf);
+    _memory.freeMem(node);
+}
+
 bool Tree::remove(Iterator *iter, int leaf_only){
+    TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
+    if(!treeIter) return false;
+    size_t size;
+    Node* targetNode = treeIter->curNode;
+    Node* parentNode = treeIter->findParent(targetNode);
+    if (leaf_only==1&&targetNode->children->size()>0)
+        return false;
+    if(parentNode){
+        List::Iterator* childIterator = parentNode->children->newIterator();
+        while(childIterator&&childIterator->hasNext()){
+            Node* childNode = static_cast<Node*>(childIterator->getElement(size));
+            if(childNode == targetNode){
+                parentNode->children->remove(childIterator);
+                break;
+            }
+            childIterator ->goToNext();
+        }
+    } else if (Root == targetNode){
+        Root == nullptr;
+    }
+    deleteSubtree(targetNode);
     return true;
 }
 
@@ -113,4 +151,7 @@ bool Tree::TreeIterator::equals(Container::Iterator *right){
     TreeIterator* rightIterator = dynamic_cast<TreeIterator*>(right);
     return rightIterator&&curNode==rightIterator->curNode&&
             listIterator==rightIterator->listIterator&&listPosition==rightIterator->listPosition;
+}
+List::Iterator* Tree::newListIterator(Node* node, size_t& listPosition, bool toBegin){
+    return node->children->newIterator();
 }
