@@ -8,7 +8,7 @@ class Tree: public AbstractTree{
         Tree(MemoryManager &mem): AbstractTree(mem) {Root=nullptr;}
         ~Tree() {}
 
-        class Node{
+        class Node {
             private:
             Tree* tree;
 
@@ -79,7 +79,6 @@ class Tree: public AbstractTree{
                     else
                         return nullptr;
                 }
-                
             }
         };
 

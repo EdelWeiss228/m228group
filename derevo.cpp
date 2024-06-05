@@ -1,10 +1,11 @@
 #include "derevo.h"
+#include "queue"
 using namespace std;
 
 Tree::Tree(MemoryManager &mem) : AbstractTree(mem), Root(nullptr) {}
 
 Tree::~Tree() {
-    clear();
+    remove(Root, 0);
 }
 
 void Tree::TreeIterator::resizeParentArray(){
@@ -87,15 +88,37 @@ Tree:: Iterator* Tree::newIterator(){
 }
 
 void Tree::remove(Container::Iterator *iter){
-    
+    TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
+    if(!treeIter) return;
+    Node* targetNode = treeIter->curNode;
+    Node* parentNode = treeIter->findParent(targetNode);
+    size_t size=0;
+    if(parentNode){
+        List::Iterator* childIter = parentNode ->children->newIterator();
+        while (childIter&& childIter->hasNext()){
+            Node* childNode = static_cast<Node*>(childIter->getElement(size));
+            if(childNode==targetNode){
+                parentNode->children->remove(childIter);
+                break;
+            }
+            childIter->goToNext();
+        }
+    }
+    else if (Root == targetNode) {
+        Root == nullptr;
+    }
+    deleteSubtree(targetNode);
 }
 
 void Tree::clear(){
-
+    if (Root) {
+        deleteSubtree(Root);
+        Root = nullptr;
+    }
 }
 
 bool Tree::empty(){
-    return true;
+    return Root == nullptr;
 }
 
 bool Tree::TreeIterator::goToParent(){
