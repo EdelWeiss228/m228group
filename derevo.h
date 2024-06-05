@@ -5,8 +5,8 @@
 class Tree: public AbstractTree{
 
     public:
-        Tree(MemoryManager &mem): AbstractTree(mem) {Root=nullptr;}
-        ~Tree() {}
+        Tree(MemoryManager &mem);
+        ~Tree();
 
         class Node {
             private:
@@ -45,8 +45,8 @@ class Tree: public AbstractTree{
             public:
             Node* curNode;
             List::Iterator* listIterator;
-            TreeIterator(Tree* tree, Node* node, List::Iterator* iterator, size_t listPosition)
-                : tree(tree), curNode(node), listIterator(iterator), listPosition(listPosition){};
+            TreeIterator(Tree* tree, Node* node, size_t listPosition)
+                : tree(tree), curNode(node), listPosition(listPosition){};
             ~TreeIterator(){
                 if(listIterator)
                     tree->_memory.freeMem(listIterator);
@@ -55,10 +55,10 @@ class Tree: public AbstractTree{
                 }
             bool goToParent();
             bool goToChild(int child_index);
-            void* getElement(size_t &size);
-            bool hasNext();
-            void goToNext();
-            bool equals(Container:: Iterator *right);
+            void* getElement(size_t &size) override;
+            bool hasNext() override;
+            void goToNext() override;
+            bool equals(Container:: Iterator *right) override;
 
             const bool operator==(Container:: Iterator *right){
                 return equals(right);
@@ -82,18 +82,18 @@ class Tree: public AbstractTree{
             }
         };
 
-        int insert(Iterator *iter, int child_index, void *elem, size_t size);
-        bool remove(Iterator *iter, int leaf_only);    //удаляет лист
+        int insert(Iterator *iter, int child_index, void *elem, size_t size) override;
+        bool remove(Iterator *iter, int leaf_only) override;    //удаляет лист
 
         //Container
-        int size();
-        size_t max_bytes();
-        Iterator* find(void *elem, size_t size);
-        Iterator* newIterator(); 
+        int size() override;
+        size_t max_bytes() override;
+        Iterator* find(void *elem, size_t size) override;
+        Iterator* newIterator() override;
         void deleteSubtree(Node* node);
-        void remove(Container::Iterator *iter);    //удаления вершины рекурсивно
-        void clear();
-        bool empty();
+        void remove(Container::Iterator *iter) override;   //удаления вершины рекурсивно
+        void clear() override;
+        bool empty() override;
 
     private:
     Node* Root;

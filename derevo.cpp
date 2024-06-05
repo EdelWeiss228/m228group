@@ -4,9 +4,7 @@ using namespace std;
 
 Tree::Tree(MemoryManager &mem) : AbstractTree(mem), Root(nullptr) {}
 
-Tree::~Tree() {
-    remove(Root, 0);
-}
+Tree::~Tree() {clear();}
 
 void Tree::TreeIterator::resizeParentArray(){
     if (fullParentArrayCap == 0){
@@ -69,20 +67,45 @@ bool Tree::remove(Iterator *iter, int leaf_only){
 }
 
 int Tree::size(){
-    return size();
+    return size(); 
 }
 
 size_t Tree::max_bytes(){
     return size();
 }
 
-Tree::Iterator* Tree::find(void *elem, size_t size){
-    return 0;
+AbstractTree::Iterator* Tree::find(void *elem, size_t size){
+    if (!Root) return nullptr;
+    queue<pair<Node*, Node*>> queue;
+    queue.push({nullptr, Root});
+    while (!queue.empty()) {
+        auto [parent, curNode] = queue.front();
+        queue.pop();
+
+        if(memcmp(curNode->leaf, elem, size)==0){
+            TreeIterator* iterator = new TreeIterator(this, curNode, 0);
+            Node* tmp = parent;
+            while (tmp){
+                iterator->addParentInfo(curNode, tmp);
+                curNode = tmp;
+                tmp = iterator->findParent(tmp);
+            }
+            return iterator;
+        }
+        List::Iterator* childIter = curNode->children->newIterator();
+        size_t size =0;
+        while(childIter&&childIter->hasNext()){
+            Node* childNode = static_cast<Node*>(childIter->getElement(size));
+            queue.push({curNode, childNode});
+            childIter->goToNext();
+        }
+    }
+    return nullptr;
 }
 
 Tree:: Iterator* Tree::newIterator(){
     if(Root){
-        return new TreeIterator(this, Root, nullptr, 0);
+        return new TreeIterator(this, Root, 0);
     }
     return nullptr;
 }
