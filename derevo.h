@@ -67,7 +67,8 @@ class Tree: public AbstractTree{
             void addParentInfo(Node* child, Node* parent){
                 if (actualParentArraySize==fullParentArrayCap)
                     resizeParentArray();
-                parentArray[actualParentArraySize+1]={child, parent};
+                ParentInfo pair = {child, parent};
+                parentArray[actualParentArraySize+1]=pair;
                 actualParentArraySize++;
             }
 

@@ -112,7 +112,7 @@ void List::remove(Iterator* iter)
 
 int List::push_front(void* elem, size_t elemSize)
 {
-	if (!list_head)//если контейнер пуст
+	if (!list_head)//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	{
 		if (elemSize > 0 && elem)
 		{
@@ -130,7 +130,7 @@ int List::push_front(void* elem, size_t elemSize)
 			}
 		}
 	}
-	else// если в нём есть элементы
+	else// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	{
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
@@ -186,11 +186,11 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 			ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 			if (current_elem)
 			{
-				if (iterator->equals(current_elem))// если добавляем в начало списка
+				if (iterator->equals(current_elem))// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				{
 					return push_front(elem, elemSize);
 				}
-				else// если добавляем не в начало
+				else// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				{
 					bufer = List::newIterator();
 					ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);

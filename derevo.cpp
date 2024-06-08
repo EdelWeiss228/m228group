@@ -76,8 +76,15 @@ size_t Tree::max_bytes(){
 
 AbstractTree::Iterator* Tree::find(void *elem, size_t size){
     if (!Root) return nullptr;
-    queue<pair<Node*, Node*>> queue;
-    queue.push({nullptr, Root});
+    struct ParentInfo
+    {
+        Node* node1;
+        Node* node2;
+    };
+    
+    queue <ParentInfo> queue;
+    ParentInfo rootPair = {nullptr, Root};
+    queue.push(rootPair);
     while (!queue.empty()) {
         auto [parent, curNode] = queue.front();
         queue.pop();
@@ -96,7 +103,8 @@ AbstractTree::Iterator* Tree::find(void *elem, size_t size){
         size_t size =0;
         while(childIter&&childIter->hasNext()){
             Node* childNode = static_cast<Node*>(childIter->getElement(size));
-            queue.push({curNode, childNode});
+            ParentInfo pair ={curNode, childNode};
+            queue.push(pair);
             childIter->goToNext();
         }
     }
