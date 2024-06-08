@@ -1,6 +1,6 @@
+#pragma once
 #include"ListAbstract.h"
 #include"Mem.h"
-#pragma once
 
 class List : public AbstractList
 {

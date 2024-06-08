@@ -9,7 +9,7 @@ public:
 
 	struct ListElem
 	{
-		int* object;
+		void* object;
 		int obj_size;
 		ListElem* next_ptr;
 	};

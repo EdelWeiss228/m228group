@@ -56,8 +56,7 @@ GroupList::Iterator* GroupList::newIterator()
 		if (iter_ptr)
 		{
 			ListIterator new_iter(list_head);
-			ListIterator* new_iter_ptr = &new_iter;
-			iter_ptr = (ListIterator*)memcpy(iter_ptr, new_iter_ptr, sizeof(ListIterator));
+			iter_ptr = (ListIterator*)memcpy(iter_ptr, &new_iter, sizeof(ListIterator));
 			return iter_ptr;
 		}
 		else
@@ -74,10 +73,13 @@ void GroupList::clear()
 	if (list_head)
 	{
 		ListElem* current_elem = list_head;
+		ListElem* bufer;
 		do
 		{
 			GroupList::_memory.freeMem(current_elem->object);
+			bufer = current_elem;
 			current_elem = current_elem->next_ptr;
+			GroupList::_memory.freeMem(bufer);
 		} while (current_elem);
 		list_head = NULL;
 	}

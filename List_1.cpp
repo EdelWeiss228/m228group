@@ -50,24 +50,6 @@ GroupList::Iterator* List::find(void* elem, size_t size)
 	return NULL;
 }
 
-//List::Iterator* List::newIterator()
-//{
-//	if (list_head)
-//	{
-//		ListIterator* iter_ptr = (ListIterator*)List::_memory.allocMem(sizeof(ListIterator));
-//		if (iter_ptr)
-//		{
-//			iter_ptr->List::ListIterator::ListIterator(list_head);
-//			return iter_ptr;
-//		}
-//		else
-//		{
-//			//exception
-//		}
-//	}
-//	return NULL;
-//}
-
 void List::remove(Iterator* iter)
 {
 	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
@@ -77,7 +59,11 @@ void List::remove(Iterator* iter)
 		ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 		if (current_elem)
 		{
-			if (iterator->equals(current_elem))	pop_front();
+			if (iterator->equals(current_elem))
+			{
+				iterator->goToNext();
+				pop_front();
+			}
 			else
 			{
 				bufer = List::newIterator();
@@ -100,7 +86,7 @@ void List::remove(Iterator* iter)
 							previous_elem->goToNext();
 							current_elem->goToNext();
 						}
-					} while (current_elem->ptr->next_ptr);
+					} while (current_elem->ptr);
 					List::_memory.freeMem(previous_elem);
 				}
 				else
@@ -130,14 +116,13 @@ int List::push_front(void* elem, size_t elemSize)
 	{
 		if (elemSize > 0 && elem)
 		{
-			//не забыть исправить тип
 			list_head = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 			if (list_head)
 			{
-				list_head->object = (int*)List::_memory.allocMem(sizeof(int));
+				list_head->object = List::_memory.allocMem(elemSize);
 				if (list_head->object)
 				{
-					list_head->object = (int*)memcpy(list_head->object, elem, 4);
+					list_head->object = memcpy(list_head->object, elem, elemSize);
 					list_head->next_ptr = NULL;
 					list_head->obj_size = elemSize;
 					return 0;
@@ -150,11 +135,11 @@ int List::push_front(void* elem, size_t elemSize)
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
 		{
-			new_node->object = (int*)List::_memory.allocMem(sizeof(int));
+			new_node->object = List::_memory.allocMem(elemSize);
 			if (new_node->object &&
 				elemSize > 0 && elem)
 			{
-				new_node->object = (int*)memcpy(new_node->object, elem, 4);
+				new_node->object = memcpy(new_node->object, elem, elemSize);
 				new_node->next_ptr = list_head;
 				new_node->obj_size = elemSize;
 				list_head = new_node;
@@ -220,10 +205,10 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 								if (new_node &&
 									elemSize > 0 && elem)
 								{
-									new_node->object = (int*)List::_memory.allocMem(sizeof(int));
+									new_node->object = List::_memory.allocMem(elemSize);
 									if (new_node->object)
 									{
-										new_node->object = (int*)memcpy(new_node->object, elem, 4);
+										new_node->object = memcpy(new_node->object, elem, elemSize);
 										new_node->obj_size = elemSize;
 										new_node->next_ptr = current_elem->ptr;
 										previous_elem->ptr->next_ptr = new_node;
@@ -250,7 +235,7 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 								previous_elem->goToNext();
 								current_elem->goToNext();
 							}
-						} while (current_elem->ptr->next_ptr);
+						} while (current_elem->ptr);
 						List::_memory.freeMem(previous_elem);
 					}
 				}
