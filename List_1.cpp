@@ -40,6 +40,7 @@ GroupList::Iterator* List::find(void* elem, size_t size)
 				}
 				current_elem = current_elem->next_ptr;
 			} while (current_elem);
+			List::_memory.freeMem(iter_ptr);
 		}
 		else
 		{
@@ -112,7 +113,7 @@ void List::remove(Iterator* iter)
 
 int List::push_front(void* elem, size_t elemSize)
 {
-	if (!list_head)//если контейнер пуст
+	if (!list_head)//РµСЃР»Рё РєРѕРЅС‚РµР№РЅРµСЂ РїСѓСЃС‚
 	{
 		if (elemSize > 0 && elem)
 		{
@@ -130,7 +131,7 @@ int List::push_front(void* elem, size_t elemSize)
 			}
 		}
 	}
-	else// если в нём есть элементы
+	else// РµСЃР»Рё РІ РЅС‘Рј РµСЃС‚СЊ СЌР»РµРјРµРЅС‚С‹
 	{
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
@@ -186,11 +187,11 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 			ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 			if (current_elem)
 			{
-				if (iterator->equals(current_elem))// если добавляем в начало списка
+				if (iterator->equals(current_elem))// РµСЃР»Рё РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ СЃРїРёСЃРєР°
 				{
 					return push_front(elem, elemSize);
 				}
-				else// если добавляем не в начало
+				else// РµСЃР»Рё РґРѕР±Р°РІР»СЏРµРј РЅРµ РІ РЅР°С‡Р°Р»Рѕ
 				{
 					bufer = List::newIterator();
 					ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
