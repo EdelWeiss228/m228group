@@ -20,14 +20,14 @@ public:
 	public:
 		ListElem* ptr;
 
-		ListIterator(ListElem* list_elem_ptr = NULL) { ptr = list_elem_ptr; }
+		ListIterator(ListElem* list_elem_ptr = NULL) { ptr = list_elem_ptr; }// -
 		void* getElement(size_t& size);
 		bool hasNext();
-		void goToNext();
+		void goToNext();// -
 		bool equals(Iterator* right);
 	};
 
-	Iterator* newIterator();
+	Iterator* newIterator();// -
 	void clear();
 	bool empty();
 
