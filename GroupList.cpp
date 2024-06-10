@@ -37,8 +37,9 @@ bool GroupList::ListIterator::equals(Iterator* right)
 	if (checking_iter)
 	{
 		if (ptr == NULL || checking_iter->ptr == NULL) return ptr == checking_iter->ptr;
-		if (ptr->obj_size == checking_iter->ptr->obj_size &&
-			!memcmp(ptr->object, checking_iter->ptr->object, ptr->obj_size)) return  true;
+		/*if (ptr->obj_size == checking_iter->ptr->obj_size &&
+			!memcmp(ptr->object, checking_iter->ptr->object, ptr->obj_size)) return  true;*/
+		if (ptr == checking_iter->ptr) return true;
 		else return false;
 	}
 	else
