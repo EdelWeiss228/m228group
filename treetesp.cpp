@@ -1,7 +1,7 @@
 #include <iostream>
-#include "derevo.h"  // Include the Tree class definition
-#include "Mem.h"     // Include the Mem class definition
-
+#include "derevo.h"
+#include "Mem.h"   
+#include "chrono" 
 using namespace std;
 
 
@@ -125,12 +125,20 @@ void testEmptyTree() {
 }
 
 int main() {
+    auto start = std::chrono::high_resolution_clock::now();
     cout << "Running Tree tests..." << endl;
+    cout << "Test1" << endl;
     testInsertAndFind();
+    cout << "Test2" << endl;
     testRemoveLeafNode();
+    cout << "Test3" << endl;
     testRemoveNonLeafNode();
+    cout << "Test4" << endl;
     testClearTree();
+    cout << "Test5" << endl;
     testEmptyTree();
     cout << "All tests completed." << endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout<<(end - start).count() / 1e6<<"  miliseconds"<<std::endl;
     return 0;
 }

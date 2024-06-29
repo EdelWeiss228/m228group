@@ -2,29 +2,34 @@
 #include "queue"
 using namespace std;
 
-Tree::Tree(MemoryManager &mem) : AbstractTree(mem), Root(nullptr) {}
-
-Tree::~Tree() {clear();}
-
-void Tree::TreeIterator::resizeParentArray(){
-    if (fullParentArrayCap == 0){
-        fullParentArrayCap=1;
-    }
-    else{
-        fullParentArrayCap=fullParentArrayCap*2;
-    }
-    parentArray = (ParentInfo*)realloc(parentArray, fullParentArrayCap*sizeof(ParentInfo));
-}
-
-int Tree::insert(Iterator *iter, int child_index, void *elem, size_t size){
-    TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
-    if(treeIter&&treeIter->curNode){
+int Tree:: insert(AbstractTree::Iterator* iter, int child_index, void* elem, size_t size) {
+TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
+    if (!treeIter && iter == nullptr && Root == nullptr) {
         Node* newNode = new Node(elem, _memory);
-        if (!newNode) return 1;
-        treeIter->curNode->children->insert(treeIter->listIterator, elem, size);
+        newNode->index = 0;
+        Root = newNode;
         return 0;
+    } else if (!treeIter) {
+        std::cout << "Insert failed: Invalid iterator type" << std::endl;
+        return 1;
     }
-    return 1;
+
+    Node* parentNode = treeIter->curNode;
+    if (!parentNode && Root != nullptr) {
+        std::cout << "Insert failed: Invalid parent node" << std::endl;
+        return 1;
+    }
+
+    Node* newNode = new Node(elem, _memory);
+    newNode->index = child_index;
+
+    if (parentNode) {
+        parentNode->children->push_front(newNode, sizeof(Node*));
+    } else {
+        Root = newNode;
+    }
+
+    return 0;
 }
 
 void Tree::deleteSubtree(Node* node){
@@ -43,26 +48,18 @@ void Tree::deleteSubtree(Node* node){
 
 bool Tree::remove(Iterator *iter, int leaf_only){
     TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
-    if(!treeIter) return false;
-    size_t size;
-    Node* targetNode = treeIter->curNode;
-    Node* parentNode = treeIter->findParent(targetNode);
-    if (leaf_only==1&&targetNode->children->size()>0)
-        return false;
-    if(parentNode){
-        List::Iterator* childIterator = parentNode->children->newIterator();
-        while(childIterator&&childIterator->hasNext()){
-            Node* childNode = static_cast<Node*>(childIterator->getElement(size));
-            if(childNode == targetNode){
-                parentNode->children->remove(childIterator);
-                break;
-            }
-            childIterator ->goToNext();
+        if (!treeIter) return false;
+
+        Node* targetNode = treeIter->curNode;
+        if (!targetNode) return false;
+
+        if (leaf_only && targetNode->children->size() > 0) return false;
+
+        deleteSubtree(targetNode);
+
+        if (targetNode == Root) {
+            Root = nullptr;
         }
-    } else if (Root == targetNode){
-        Root == nullptr;
-    }
-    deleteSubtree(targetNode);
     return true;
 }
 
@@ -75,40 +72,7 @@ size_t Tree::max_bytes(){
 }
 
 AbstractTree::Iterator* Tree::find(void *elem, size_t size){
-    if (!Root) return nullptr;
-    struct ParentInfo
-    {
-        Node* node1;
-        Node* node2;
-    };
-    
-    queue <ParentInfo> queue;
-    ParentInfo rootPair = {nullptr, Root};
-    queue.push(rootPair);
-    while (!queue.empty()) {
-        auto [parent, curNode] = queue.front();
-        queue.pop();
-
-        if(memcmp(curNode->leaf, elem, size)==0){
-            TreeIterator* iterator = new TreeIterator(this, curNode, 0);
-            Node* tmp = parent;
-            while (tmp){
-                iterator->addParentInfo(curNode, tmp);
-                curNode = tmp;
-                tmp = iterator->findParent(tmp);
-            }
-            return iterator;
-        }
-        List::Iterator* childIter = curNode->children->newIterator();
-        size_t size =0;
-        while(childIter&&childIter->hasNext()){
-            Node* childNode = static_cast<Node*>(childIter->getElement(size));
-            ParentInfo pair ={curNode, childNode};
-            queue.push(pair);
-            childIter->goToNext();
-        }
-    }
-    return nullptr;
+    return findHelper(Root, elem, size);
 }
 
 Tree:: Iterator* Tree::newIterator(){
@@ -120,25 +84,15 @@ Tree:: Iterator* Tree::newIterator(){
 
 void Tree::remove(Container::Iterator *iter){
     TreeIterator* treeIter = dynamic_cast<TreeIterator*>(iter);
-    if(!treeIter) return;
-    Node* targetNode = treeIter->curNode;
-    Node* parentNode = treeIter->findParent(targetNode);
-    size_t size=0;
-    if(parentNode){
-        List::Iterator* childIter = parentNode ->children->newIterator();
-        while (childIter&& childIter->hasNext()){
-            Node* childNode = static_cast<Node*>(childIter->getElement(size));
-            if(childNode==targetNode){
-                parentNode->children->remove(childIter);
-                break;
-            }
-            childIter->goToNext();
+        if (!treeIter) return;
+        Node* targetNode = treeIter->curNode;
+        if (!targetNode) return;
+        if (0 && targetNode->children->size() > 0) return;
+        deleteSubtree(targetNode);
+        if (targetNode == Root) {
+            Root = nullptr;
         }
-    }
-    else if (Root == targetNode) {
-        Root == nullptr;
-    }
-    deleteSubtree(targetNode);
+    return;
 }
 
 void Tree::clear(){
@@ -153,31 +107,28 @@ bool Tree::empty(){
 }
 
 bool Tree::TreeIterator::goToParent(){
-    Node* parent = findParent(curNode);
-    if (parent){
-        curNode = parent;
-        return true;
-    }
+    // Node* parent = findParent(curNode);
+    // if (parent){
+    //     curNode = parent;
+    //     return true;
+    // }
     return false;
 }
 
 bool Tree::TreeIterator::goToChild(int child_index){
-    if(curNode&&curNode->children){
-        List::Iterator* childIterator=curNode->children->newIterator();
-        size_t curIndex=0;
-        size_t elemSize=0;
-        while(childIterator&&childIterator->hasNext()){
-            if(curIndex==child_index){
-                Node* childNode = static_cast <Node*>(childIterator->getElement(elemSize));
-                addParentInfo(childNode, curNode);
-                curNode = childNode;
-                return true;
+    size_t size = 0;
+    if (!curNode || !curNode->children) return false;
+        List::Iterator* childIter = curNode->children->newIterator();
+        for (int i = 0; i < child_index; i++) {
+            if (!childIter->hasNext()) {
+                tree->_memory.freeMem(childIter);
+                return false;
             }
-            childIterator->goToNext();
-            curIndex++;
+            childIter->goToNext();
         }
-    }
-    return false;
+    curNode = static_cast<Node*>(childIter->getElement(size));
+    tree->_memory.freeMem(childIter);
+    return true;
 }
 
 void* Tree::TreeIterator::getElement(size_t &size){
@@ -209,3 +160,4 @@ bool Tree::TreeIterator::equals(Container::Iterator *right){
 List::Iterator* Tree::newListIterator(Node* node, size_t& listPosition, bool toBegin){
     return node->children->newIterator();
 }
+
