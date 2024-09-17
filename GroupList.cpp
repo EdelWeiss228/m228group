@@ -22,6 +22,7 @@ void GroupList::ListIterator::goToNext()
 {
 	if (ptr)
 	{
+		prev_ptr = ptr;
 		ptr = ptr->next_ptr;
 	}
 	else
@@ -36,9 +37,7 @@ bool GroupList::ListIterator::equals(Iterator* right)
 	ListIterator* checking_iter = dynamic_cast<ListIterator*>(right);
 	if (checking_iter)
 	{
-		if (ptr == NULL || checking_iter->ptr == NULL) return ptr == checking_iter->ptr;
-		if (ptr->obj_size == checking_iter->ptr->obj_size &&
-			!memcmp(ptr->object, checking_iter->ptr->object, ptr->obj_size)) return  true;
+		if (ptr == checking_iter->ptr) return true;
 		else return false;
 	}
 	else
@@ -55,7 +54,7 @@ GroupList::Iterator* GroupList::newIterator()
 		ListIterator* iter_ptr = (ListIterator*)GroupList::_memory.allocMem(sizeof(ListIterator));
 		if (iter_ptr)
 		{
-			ListIterator new_iter(list_head);
+			ListIterator new_iter(nullptr, list_head);
 			iter_ptr = (ListIterator*)memcpy(iter_ptr, &new_iter, sizeof(ListIterator));
 			return iter_ptr;
 		}
@@ -83,11 +82,6 @@ void GroupList::clear()
 		} while (current_elem);
 		list_head = NULL;
 	}
-	else
-	{
-		Error err("Container is empty!");
-		throw err;
-	}
 }
 
 bool GroupList::empty()
@@ -99,7 +93,7 @@ bool GroupList::empty()
 
 void* GroupList::group_list_front(size_t& size)
 {
-	if (list_head->object)
+	if (list_head && list_head->object)
 	{
 		size = list_head->obj_size;
 		return list_head;

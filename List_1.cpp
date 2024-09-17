@@ -27,19 +27,22 @@ GroupList::Iterator* List::find(void* elem, size_t size)
 		ListIterator* iter_ptr = (ListIterator*)List::_memory.allocMem(sizeof(ListIterator));
 		if (iter_ptr)
 		{
+			ListElem* prev_elem = nullptr;
 			ListElem* current_elem = list_head;
 			do
 			{
 				if (size == current_elem->obj_size &&
 					!memcmp(elem, current_elem->object, size))
 				{
-					ListIterator new_iter(current_elem);
+					ListIterator new_iter(prev_elem, current_elem);
 					ListIterator* new_iter_ptr = &new_iter;
 					iter_ptr = (ListIterator*)memcpy(iter_ptr, new_iter_ptr, sizeof(ListIterator));
 					return iter_ptr;
 				}
+				prev_elem = current_elem;
 				current_elem = current_elem->next_ptr;
 			} while (current_elem);
+			List::_memory.freeMem(iter_ptr);
 		}
 		else
 		{
@@ -50,69 +53,149 @@ GroupList::Iterator* List::find(void* elem, size_t size)
 	return NULL;
 }
 
+//void List::remove(Iterator* iter)
+//{
+//	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
+//	if (iterator)
+//	{
+//		Iterator* bufer = List::newIterator();
+//		ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
+//		if (current_elem)
+//		{
+//			if (iterator->equals(current_elem))
+//			{
+//				iterator->goToNext();
+//				pop_front();
+//			}
+//			else
+//			{
+//				bufer = List::newIterator();
+//				ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
+//				if (previous_elem)
+//				{
+//					current_elem->goToNext();
+//					do
+//					{
+//						if (current_elem->equals(iterator))
+//						{
+//							List::_memory.freeMem(current_elem->ptr->object);
+//							iterator->goToNext();
+//							previous_elem->ptr->next_ptr = iterator->ptr;
+//							List::_memory.freeMem(current_elem->ptr);
+//							break;
+//						}
+//						else
+//						{
+//							previous_elem->goToNext();
+//							current_elem->goToNext();
+//						}
+//					} while (current_elem->ptr);
+//					List::_memory.freeMem(previous_elem);
+//				}
+//				else
+//				{
+//					Error err("Dynamic cast error!");
+//					throw err;
+//				}
+//			}
+//			List::_memory.freeMem(current_elem);
+//		}
+//		else
+//		{
+//			Error err("Dynamic cast error or list is empty!");
+//			throw err;
+//		}
+//	}
+//	else
+//	{
+//		Error err("Dynamic cast error or iterator was NULL!");
+//		throw err;
+//	}
+//}
+
+//void List::remove(Iterator* iter)
+//{
+//	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
+//	if (iterator)
+//	{
+//		void* scouting_elem = iterator->ptr->object;
+//		void* current_elem_obj = list_head->object;
+//		ListElem* curr_elem_next_ptr = list_head->next_ptr;
+//
+//		if (scouting_elem == current_elem_obj)
+//		{
+//			iterator->goToNext();
+//			pop_front();
+//		}
+//		else
+//		{
+//			ListElem* previous_elem_ptr = list_head;
+//
+//			current_elem_obj = curr_elem_next_ptr->object;
+//			curr_elem_next_ptr = curr_elem_next_ptr->next_ptr;
+//			do
+//			{
+//				if (scouting_elem == current_elem_obj)
+//				{
+//					List::_memory.freeMem(previous_elem_ptr->next_ptr->object);
+//					iterator->goToNext();
+//					List::_memory.freeMem(previous_elem_ptr->next_ptr);
+//					previous_elem_ptr->next_ptr = iterator->ptr;
+//					return;
+//				}
+//				else
+//				{
+//					current_elem_obj = curr_elem_next_ptr->object;
+//					curr_elem_next_ptr = curr_elem_next_ptr->next_ptr;
+//					previous_elem_ptr = previous_elem_ptr->next_ptr;
+//				}
+//			} while (curr_elem_next_ptr);
+//
+//			if (scouting_elem == current_elem_obj)
+//			{
+//				List::_memory.freeMem(previous_elem_ptr->next_ptr->object);
+//				iterator->goToNext();
+//				List::_memory.freeMem(previous_elem_ptr->next_ptr);
+//				previous_elem_ptr->next_ptr = iterator->ptr;
+//				return;
+//			}
+//		}
+//	}
+//	else
+//	{
+//		Error err("Dynamic cast error or iterator was NULL!");
+//		throw err;
+//	}
+//}
+
 void List::remove(Iterator* iter)
 {
 	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
 	if (iterator)
 	{
-		Iterator* bufer = List::newIterator();
-		ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
-		if (current_elem)
+		if (iterator->prev_ptr)
 		{
-			if (iterator->equals(current_elem))
-			{
-				iterator->goToNext();
-				pop_front();
-			}
-			else
-			{
-				bufer = List::newIterator();
-				ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
-				if (previous_elem)
-				{
-					current_elem->goToNext();
-					do
-					{
-						if (current_elem->equals(iterator))
-						{
-							List::_memory.freeMem(current_elem->ptr->object);
-							iterator->goToNext();
-							previous_elem->ptr->next_ptr = iterator->ptr;
-							List::_memory.freeMem(current_elem->ptr);
-							break;
-						}
-						else
-						{
-							previous_elem->goToNext();
-							current_elem->goToNext();
-						}
-					} while (current_elem->ptr);
-					List::_memory.freeMem(previous_elem);
-				}
-				else
-				{
-					Error err("Dynamic cast error!");
-					throw err;
-				}
-			}
-			List::_memory.freeMem(current_elem);
+			List::_memory.freeMem(iterator->ptr->object);
+			iterator->prev_ptr->next_ptr = iterator->ptr->next_ptr;
+			List::_memory.freeMem(iterator->ptr);
+			iterator->ptr = iterator->prev_ptr->next_ptr;
 		}
 		else
 		{
-			Error err("Dynamic cast error!");
-			throw err;
+			iterator->ptr = iterator->ptr->next_ptr;
+			pop_front();
 		}
 	}
 	else
 	{
-		Error err("Dynamic cast error!");
+		Error err("Dynamic cast error or iterator was NULL!");
 		throw err;
 	}
 }
 
 int List::push_front(void* elem, size_t elemSize)
 {
-	if (!list_head)//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	if (!list_head)//если контейнер пуст
 	{
 		if (elemSize > 0 && elem)
 		{
@@ -130,7 +213,7 @@ int List::push_front(void* elem, size_t elemSize)
 			}
 		}
 	}
-	else// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	else// если в нём есть элементы
 	{
 		ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
 		if (new_node)
@@ -186,11 +269,11 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 			ListIterator* current_elem = dynamic_cast<ListIterator*>(bufer);
 			if (current_elem)
 			{
-				if (iterator->equals(current_elem))// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+				if (iterator->equals(current_elem))// если добавляем в начало списка
 				{
 					return push_front(elem, elemSize);
 				}
-				else// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+				else// если добавляем не в начало
 				{
 					bufer = List::newIterator();
 					ListIterator* previous_elem = dynamic_cast<ListIterator*>(bufer);
@@ -249,3 +332,49 @@ int List::insert(Iterator* iter, void* elem, size_t elemSize)
 		return 1;
 	}
 }
+
+//int List::insert(Iterator* iter, void* elem, size_t elemSize)
+//{
+//	ListIterator* iterator = dynamic_cast<ListIterator*>(iter);
+//	if (iterator && iterator->ptr)
+//	{
+//		ListElem* curr_elem = list_head;
+//		if (iterator->ptr == curr_elem) return push_front(elem, elemSize);// если добавляем в начало списка
+//		else// если добавляем не в начало
+//		{
+//			curr_elem = curr_elem->next_ptr;
+//			do
+//			{
+//				if (iterator->ptr == curr_elem)
+//				{
+//					ListElem* new_node = (ListElem*)List::_memory.allocMem(sizeof(ListElem));
+//					if (new_node)
+//					{
+//						if (elemSize > 0 && elem)
+//						{
+//							new_node->object = memcpy(new_node->object, elem, elemSize);
+//							new_node->obj_size = elemSize;
+//							new_node->next_ptr = iterator->ptr;
+//							iterator->prev_ptr->next_ptr = new_node;
+//							return 0;
+//						}
+//						List::_memory.freeMem(new_node);
+//						return 1;
+//					}
+//					else
+//					{
+//						return 1;
+//					}
+//				}
+//				else
+//				{
+//					curr_elem = curr_elem->next_ptr;
+//				}
+//			} while (curr_elem->next_ptr);
+//		}
+//	}
+//	else
+//	{
+//		return 1;
+//	}
+//}

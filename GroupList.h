@@ -18,9 +18,14 @@ public:
 	class ListIterator : public Iterator
 	{
 	public:
+		ListElem* prev_ptr;
 		ListElem* ptr;
 
-		ListIterator(ListElem* list_elem_ptr = NULL) { ptr = list_elem_ptr; }
+		ListIterator(ListElem* prev_elem_ptr = NULL, ListElem* list_elem_ptr = NULL)
+		{ 
+			prev_ptr = prev_elem_ptr;
+			ptr = list_elem_ptr; 
+		}
 		void* getElement(size_t& size);
 		bool hasNext();
 		void goToNext();
