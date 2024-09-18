@@ -5,43 +5,28 @@
 class Tree: public AbstractTree{
 
     public:
-        Tree(MemoryManager &mem) : AbstractTree(mem), Root(nullptr) {}
-        ~Tree(){ clear(); }
+        Tree(MemoryManager &mem) : AbstractTree(mem), Root(nullptr), NumberOfElems(0) {new (Root) List(this->_memory);}
+        ~Tree(){ this->clear(); this->Root->~List(); this->_memory.freeMem(Root); this->Root=nullptr; AbstractTree::~AbstractTree();}
 
-        class Node {
-            private:
-            Tree* tree;
-
-            public:
+        struct Node {
             void* leaf;
             List* children;
             int index;
-            Node(void* value, MemoryManager& mem) : leaf(value), children(new List(mem)), index(0) {}
-            ~Node() {
-                tree->_memory.freeMem(children);
-            }
+            size_t size;
+            Node* parent;
         };
 
-        class TreeIterator: public AbstractTree::Iterator{
+        class Iterator: public AbstractTree::Iterator{
             private:
             Tree* tree;
-            size_t listPosition;
+            Node* returnNode();
+            Iterator* parentIterator;
+            List::Iterator* currentIterator;
 
             public:
-            Node* curNode;
             List::Iterator* listIterator;
-            TreeIterator(Tree* tree, Node* node, size_t listPosition)
-                : tree(tree), curNode(node), listPosition(listPosition){
-                    if(curNode){
-                        listIterator=curNode->children->newIterator();
-                    }  else {
-                            listIterator = nullptr;
-                    }
-                };
-            ~TreeIterator(){
-                if(listIterator)
-                    tree->_memory.freeMem(listIterator);
-                }
+            Iterator(){this->parentIterator=nullptr; this->currentIterator = nullptr;}
+            ~Iterator(){while (this->goToParent()) continue; delete this->currentIterator; delete this->parentIterator;}
             bool goToParent();
             bool goToChild(int child_index);
             void* getElement(size_t &size) override;
@@ -52,10 +37,11 @@ class Tree: public AbstractTree{
             const bool operator==(Container:: Iterator *right){
                 return equals(right);
             }
+            friend class Tree;
         };
 
-        int insert(Iterator *iter, int child_index, void *elem, size_t size) override;
-        bool remove(Iterator *iter, int leaf_only) override;    //удаляет лист
+        int insert(AbstractTree::Iterator *iter, int child_index, void *elem, size_t size) override;
+        bool remove(AbstractTree::Iterator *iter, int leaf_only) override;    //удаляет лист
 
         //Container
         int size() override;
@@ -66,22 +52,9 @@ class Tree: public AbstractTree{
         void remove(Container::Iterator *iter) override;   //удаления вершины рекурсивно
         void clear() override;
         bool empty() override;
+        friend class Iterator;
 
     private:
-    Node* Root;
-    List::Iterator* newListIterator(Node* node, size_t& listPosition, bool toBegin);
-        Iterator* findHelper(Node* node, void* elem, size_t size) {
-        size_t size_o = 0;
-        if (!node) return nullptr;
-        if (memcmp(node->leaf, elem, size) == 0) return new TreeIterator(this, node, 0);
-        List::Iterator* iter = node->children->newIterator();
-        Iterator* result = nullptr;
-        while (iter->hasNext()) {
-            iter->goToNext();
-            result = findHelper(static_cast<Node*>(iter->getElement(size_o)), elem, size);
-            if (result) break;
-        }
-         _memory.freeMem(iter);
-        return result;
-    }
+    List* Root;
+    size_t NumberOfElems;
 };
