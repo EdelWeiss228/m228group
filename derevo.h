@@ -11,7 +11,6 @@ class Tree: public AbstractTree{
         struct Node {
             void* leaf;
             List* children;
-            int index;
             size_t size;
             Node* parent;
         };
@@ -48,7 +47,6 @@ class Tree: public AbstractTree{
         size_t max_bytes() override;
         Iterator* find(void *elem, size_t size) override;
         Iterator* newIterator() override;
-        void deleteSubtree(Node* node);
         void remove(Container::Iterator *iter) override;   //удаления вершины рекурсивно
         void clear() override;
         bool empty() override;
@@ -56,5 +54,5 @@ class Tree: public AbstractTree{
 
     private:
     List* Root;
-    size_t NumberOfElems;
+    size_t NumberOfElems = 0;
 };

@@ -1,5 +1,4 @@
 #include "derevo.h"
-#include "queue"
 using namespace std;
 
 Tree::Node* Tree::Iterator::returnNode(){
@@ -11,26 +10,79 @@ Tree::Node* Tree::Iterator::returnNode(){
 }
 
 int Tree:: insert(AbstractTree::Iterator* iter, int child_index, void* elem, size_t size) {
-    Tree::Iterator* tmp = static_cast <Tree::Iterator*>(iter);
-    
-}
-
-void Tree::deleteSubtree(Node* node){
-    if(!node) return;
-    size_t size;
-    List::Iterator* childIterator = node ->children->newIterator();
-    while (childIterator&&childIterator->hasNext()) {
-        Node* childNode = static_cast <Node*>(childIterator->getElement(size));
-        deleteSubtree(childNode);
-        childIterator->goToNext();
+    Iterator* tmp = static_cast <Iterator*>(iter);
+    bool emptinessFlag = true;
+    if (!tmp) {
+        if (empty())
+            return 1;
+        emptinessFlag = false;
     }
-    delete node->children;
-    _memory.freeMem(node->leaf);
-    _memory.freeMem(node);
+    Node* tmpNode = nullptr;
+    List* tmpList = nullptr;
+    if (!emptinessFlag) {
+        tmpNode = tmp->returnNode();
+        if(!tmpNode)
+            return 1;
+        tmpList = tmpNode->children;
+    }
+    else tmpList = this->Root;
+    void* tmpChildren = _memory.allocMem(sizeof(List));
+    void* tmpObject = _memory.allocMem(size);
+    if (!tmpChildren)
+        _memory.freeMem(tmpChildren);
+    else if (!tmpObject)
+        _memory.freeMem(tmpObject);
+    else if (tmpObject && tmpChildren){
+        new (tmpChildren) List(this->_memory);
+        Node* newObject = new Node {tmpObject, static_cast<List*>(tmpChildren), size, tmpNode};
+        memcpy(tmpObject, elem, size);
+        if (!newObject){
+            _memory.freeMem(tmpChildren);
+            _memory.freeMem(tmpObject);
+        }
+        else{
+            tmpList->push_front(newObject, sizeof(*newObject));
+            delete newObject;
+            NumberOfElems++;
+            return 0;
+        }
+    }
+    return 1;
 }
 
 bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only){
-
+    Iterator* treeIter = dynamic_cast<Iterator*>(iter);
+    if(!treeIter)
+        return false;
+    Node* tmpNode = treeIter->returnNode();
+    if(!tmpNode)
+        return false;
+    if(!leaf_only){
+        remove (iter);
+        return true;
+    }
+    else{
+        if(!tmpNode->children->empty())
+            return false;
+        Node* tmpParent = tmpNode->parent;
+        this->_memory.freeMem(tmpNode->leaf);
+        tmpNode->children->~List();
+        this->_memory.freeMem(tmpNode->children);
+        if (!tmpParent) {
+            delete treeIter;
+            Root->clear();
+        }
+        else {
+            if(tmpParent->children->size() <= 1){
+                treeIter->goToParent();
+                tmpParent->children->clear();
+            }
+            else
+                tmpParent->children->remove(treeIter->currentIterator);
+        }
+        this->NumberOfElems-1;
+        return true;
+    }
 }
 
 int Tree::size(){
@@ -41,8 +93,8 @@ size_t Tree::max_bytes(){
     return _memory.maxBytes();
 }
 
-AbstractTree::Iterator* Tree::find(void *elem, size_t size){
-    return findHelper(Root, elem, size);
+Tree::Iterator* Tree::find(void *elem, size_t size){
+    
 }
 
 Tree:: Iterator* Tree::newIterator(){
@@ -61,15 +113,19 @@ Tree:: Iterator* Tree::newIterator(){
 
 void Tree::remove(Container::Iterator *iter){
     Iterator* treeIter = dynamic_cast<Iterator*>(iter);
-        if (!treeIter) return;
-        Node* targetNode = treeIter->curNode;
-        if (!targetNode) return;
-        if (0 && targetNode->children->size() > 0) return;
-        deleteSubtree(targetNode);
-        if (targetNode == Root) {
-            Root = nullptr;
+    if(treeIter){
+        Node* tmpNode = treeIter->returnNode();
+        if (!tmpNode)
+            return;
+        if (treeIter->goToChild(0)){
+            while(!tmpNode->children->empty()){
+                if(treeIter->goToChild(0))
+                    remove(treeIter);
+                remove(treeIter, 1);
+            }
         }
-    return;
+        remove(treeIter, 1);
+    }
 }
 
 void Tree::clear(){
