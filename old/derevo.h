@@ -1,38 +1,40 @@
 #pragma once
 #include "TreeAbstract.h"
-#include "LinkedList1.hpp"
+#include "List_1.h"
 
 class Tree: public AbstractTree{
 
     public:
-        Tree(MemoryManager &mem) : AbstractTree(mem), Root{mem}, NumberOfElems{0} {}
-        ~Tree(){Root.removeChildren(this->_memory);}
+        Tree(MemoryManager &mem) : AbstractTree(mem), Root(), NumberOfElems(0) {
 
-        class Node {
-            public:
-            Node(MemoryManager &mem): children(mem){}
-            ~Node(){}
-            List children;
-            Node* parent = nullptr;
-            void* leaf=nullptr;
-            size_t leafSize=0;
-            Node* find (size_t size, void*);
-            size_t removeChildren (MemoryManager &mem);
-            bool isLeaf();
-            Node* find (void* data, size_t size);
-            Node* getFirst();
-            size_t rightElemIndex (Node* node);
+    this->Root = new List(mem); // Предположим, что у вас есть класс List
+    if (this->Root == nullptr) {
+        std::cout << "Ошибка инициализации корневого списка." << std::endl;
+    } else {
+        std::cout << "Корневой список успешно инициализирован." << std::endl;
+    }
+}
+
+        ~Tree(){ this->clear(); this->Root->~List(); this->_memory.freeMem(Root); this->Root=nullptr; AbstractTree::~AbstractTree();}
+
+        struct Node {
+            void* leaf;
+            List* children;
+            size_t size;
+            Node* parent;
         };
 
         class Iterator: public AbstractTree::Iterator{
             private:
-            const Node *Root;
-            Node *curNode;
+            Tree* tree;
+            Iterator* parentIterator;
+            List::Iterator* currentIterator;
 
             public:
-            Iterator(const Node* root, Node* node):Root{root}, curNode{node}{}
-            ~Iterator() = default;
-            Node* returnNode(){return curNode;}
+            Node* returnNode();
+            List::Iterator* listIterator;
+            Iterator(){this->parentIterator=nullptr; this->currentIterator = nullptr;}
+            ~Iterator(){while (this->goToParent()) continue; delete this->currentIterator; delete this->parentIterator;}
             bool goToParent() override;
             bool goToChild(int child_index) override;
             void* getElement(size_t &size) override;
@@ -52,7 +54,7 @@ class Tree: public AbstractTree{
         //Container
         int size() override;
         size_t max_bytes() override;
-        Container:: Iterator* find(void *elem, size_t size) override;
+        Iterator* find(void *elem, size_t size) override;
         Iterator* newIterator() override;
         void remove(Container::Iterator *iter) override;   //удаления вершины рекурсивно
         void clear() override;
@@ -60,7 +62,6 @@ class Tree: public AbstractTree{
         friend class Iterator;
 
     private:
-    Iterator* createIterator (Node *node);
-    Node Root;
+    List* Root;
     size_t NumberOfElems = 0;
 };

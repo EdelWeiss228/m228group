@@ -1,7 +1,7 @@
 #include "Mem.h"
 #include "iostream"
 
-typedef Mem::mem_handle mem_handle_t;
+//typedef Mem::mem_handle mem_handle_t;
 
 void* Mem::allocMem(size_t block_size) {
     // if (full_size == -1){
@@ -88,19 +88,19 @@ void Mem::freeMem(void*ptr) {
     delete[] ptr;
 }
 
-int Mem::get_max_block_size() {
-    return full_size - real_size;
-}
+// int Mem::get_max_block_size() {
+//     return full_size - real_size;
+// }
 
-int Mem::get_free_space() {
-    return full_size - real_size;
-}
+// int Mem::get_free_space() {
+//     return full_size - real_size;
+// }
 
-void Mem::print_blocks() {
-    for (int i = 0; i < count; i++) {
-        if (array_of_blocks[i].size != -1 && array_of_blocks[i].addr != -1)
-            printf("%d %d\n", array_of_blocks[i].addr, array_of_blocks[i].size);
-        else
-            printf("EMPTY\n");
-    }
-}
+// void Mem::print_blocks() {
+//     for (int i = 0; i < count; i++) {
+//         if (array_of_blocks[i].size != -1 && array_of_blocks[i].addr != -1)
+//             printf("%d %d\n", array_of_blocks[i].addr, array_of_blocks[i].size);
+//         else
+//             printf("EMPTY\n");
+//     }
+// }

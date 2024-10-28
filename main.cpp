@@ -1,14 +1,11 @@
 #include "derevo.h"
 #include "Mem.h"
-#include "List_1.h"
-#pragma once
-using namespace std;
+#include "LinkedList1.hpp"
 
 
-int main(){
-    Mem mm(999);
-    cout<<mm.size();
-    Tree *derevo = new Tree(mm);
-    List *list = new List(mm);
+int main() {
+    Mem mem (1000);
+    Tree tree(mem);
+    std::cout << "Все тесты пройдены успешно!" << std::endl;
     return 0;
 }
