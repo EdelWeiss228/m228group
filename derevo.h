@@ -16,7 +16,7 @@ class Tree: public AbstractTree{
             Node* parent = nullptr;
             void* leaf=nullptr;
             size_t leafSize=0;
-            Node* find (size_t size, void*);
+            Node* find (size_t size, void* elem);
             size_t removeChildren (MemoryManager &mem);
             bool isLeaf();
             Node* find (void* data, size_t size);

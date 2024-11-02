@@ -30,7 +30,7 @@ int Tree::insert(AbstractTree::Iterator* iter, int child_index, void* elem, size
 
 
 bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only){
-    if (iter=nullptr)
+    if (iter==nullptr)
         return false;
     Iterator* inputIter = dynamic_cast<Tree::Iterator*>(iter);
     if (empty()||&Root==inputIter->returnNode())
@@ -90,7 +90,7 @@ size_t Tree::max_bytes(){
 }
 
 Container:: Iterator* Tree::find(void *elem, size_t size){
-    if((elem=nullptr)||(size==0)||(NumberOfElems == 0))
+    if((elem==nullptr)||(size==0)||(NumberOfElems == 0))
         return nullptr;
     Node* result = Root.find(size, elem);
     if (result==nullptr)
@@ -135,7 +135,7 @@ Tree::Node *Tree::Node::getFirst(){
 
 void Tree::remove(Container::Iterator *iter){
     Tree::Iterator *inputIter = dynamic_cast<Tree::Iterator *>(iter);
-    if (inputIter=nullptr)
+    if (inputIter==nullptr)
         return;
     remove(inputIter, 0);
 }

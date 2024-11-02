@@ -1,6 +1,5 @@
 #pragma once
 #include <stdlib.h>
-#pragma warning (disable: 4996)
 
 // Базовый класс менеджера памяти
 class MemoryManager {
