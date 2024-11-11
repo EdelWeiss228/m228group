@@ -2,6 +2,7 @@
 #include <iostream>
 #include "ListAbstract.h"
 #include <list>
+using namespace std;
 
 const size_t ELEMSIZE = sizeof(int);
 

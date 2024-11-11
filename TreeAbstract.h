@@ -14,6 +14,8 @@ public:
     class Iterator: public Container::Iterator
     {
     public:
+        ~Iterator() = default;
+
         // Переход к родительской вершине. Возвращает false если текущая вершина - корень или end().
         virtual bool goToParent() = 0;
 

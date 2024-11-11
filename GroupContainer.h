@@ -1,9 +1,10 @@
 #pragma once
+
 #include "Container.h"
 
-class GroupContainer: public Container {
-protected:
-    size_t PearsonHashing(const void* elem, size_t elemSize, size_t containerSize);
+// Базовый класс для некоторой группы абстрактных контейнеров
+class GroupContainer: public Container
+{
 public:
     GroupContainer(MemoryManager &mem): Container(mem) {}
 };
