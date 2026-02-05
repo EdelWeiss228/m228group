@@ -26,9 +26,6 @@ int Tree::insert(AbstractTree::Iterator* iter, int child_index, void* elem, size
     return 0;
 }
 
-
-
-
 bool Tree::remove(AbstractTree::Iterator *iter, int leaf_only){
     if (iter==nullptr)
         return false;
