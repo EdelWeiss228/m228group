@@ -78,6 +78,7 @@ public:
 
         friend class ListNode;
         friend class List;
+        friend class Tree;
     };
 
     List(MemoryManager &mem) : AbstractList(mem)

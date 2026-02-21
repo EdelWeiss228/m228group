@@ -18,18 +18,19 @@ List::~List()
 
 void *List::ListIterator::getElement(size_t &size)
 {
-    size = sizeof(this->cur_node->get_data());
+    if (!this->cur_node) return nullptr;
+    size = this->cur_node->get_size();
     return this->cur_node->get_data();
 }
 
 bool List::ListIterator::hasNext()
 {
-    return (bool)(this->cur_node->get_next());
+    return this->cur_node != nullptr;
 }
 
 void List::ListIterator::goToNext()
 {
-    if (this->hasNext())
+    if (this->cur_node)
     {
         this->prev_node = cur_node;
         this->cur_node = this->cur_node->get_next();
@@ -39,7 +40,8 @@ void List::ListIterator::goToNext()
 bool List::ListIterator::equals(Iterator *right)
 {
     ListIterator *list_right = dynamic_cast<ListIterator *>(right);
-    return (bool)(this == list_right);
+    if (!list_right) return false;
+    return this->cur_node == list_right->cur_node;
 }
 
 int List::push_front(void *elem, size_t elemSize)
@@ -54,19 +56,14 @@ int List::push_front(void *elem, size_t elemSize)
 
 void List::pop_front()
 {
-    if (head->get_next())
+    if (head)
     {
         ListNode *buf = head;
         head = head->get_next();
         _memory.freeMem(buf->get_data());
         delete buf;
+        num_of_elems--;
     }
-    else
-    {
-        _memory.freeMem(head->get_data());
-        delete head;
-    }
-    num_of_elems--;
 }
 
 void *List::front(size_t &size)
@@ -78,7 +75,7 @@ void *List::front(size_t &size)
 int List::insert(Iterator *iter, void *elem, size_t elemSize)
 {
     ListIterator *list_iter = dynamic_cast<ListIterator *>(iter);
-    if (list_iter->prev_node)
+    if (list_iter && list_iter->prev_node)
     {
         num_of_elems++;
         void *new_data = _memory.allocMem(elemSize);
@@ -89,7 +86,7 @@ int List::insert(Iterator *iter, void *elem, size_t elemSize)
     }
     else
     {
-        push_front(elem, elemSize);
+        return push_front(elem, elemSize);
     }
     return 0;
 }
@@ -106,39 +103,56 @@ int List::size()
 
 Container::Iterator *List::newIterator()
 {
+    if (!head) return nullptr;
     return new ListIterator(head, NULL);
 }
 
 Container::Iterator *List::find(void *elem, size_t size)
 {
     ListIterator *find_iter = dynamic_cast<ListIterator *>(newIterator());
-    while (find_iter->hasNext())
+    if (!find_iter) return NULL;
+    while (find_iter->cur_node)
     {
-        if (find_iter->cur_node->get_data() == elem)
+        size_t cur_size = find_iter->cur_node->get_size();
+        if (cur_size == size && memcmp(find_iter->cur_node->get_data(), elem, size) == 0)
         {
             return find_iter;
         }
+        if (!find_iter->hasNext()) break;
         find_iter->goToNext();
     }
+    delete find_iter;
     return NULL;
 }
 
 void List::remove(Iterator *iter)
 {
     ListIterator *remove_iter = dynamic_cast<ListIterator *>(iter);
+    if (!remove_iter || !remove_iter->cur_node) return;
+
     if (remove_iter->prev_node == NULL)
     {
-        remove_iter->goToNext();
-        pop_front();
+        ListNode *buf = head;
+        if (buf) {
+            head = head->get_next();
+            remove_iter->cur_node = head;
+            
+            _memory.freeMem(buf->get_data());
+            delete buf;
+            num_of_elems--;
+        }
     }
     else
     {
         ListNode *buf = remove_iter->cur_node;
-        remove_iter->prev_node->change_next(remove_iter->cur_node->get_next());
-        remove_iter->cur_node = remove_iter->cur_node->get_next();
-        _memory.freeMem(buf->get_data());
-        num_of_elems--;
-        delete buf;
+        if (buf) {
+            remove_iter->prev_node->change_next(buf->get_next());
+            remove_iter->cur_node = buf->get_next();
+            
+            _memory.freeMem(buf->get_data());
+            delete buf;
+            num_of_elems--;
+        }
     }
 }
 

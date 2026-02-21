@@ -459,3 +459,11 @@ Tree::TreeIterator *Tree::createIterator(Tree::Node *node)
     return new Tree::TreeIterator(&_root, node);
 }
 // удаление итератора, создание нового
+
+bool Tree::TreeIterator::equals(Container::Iterator *right)
+{
+    TreeIterator *inputIter = dynamic_cast<TreeIterator *>(right);
+    if (nullptr == inputIter)
+        return false;
+    return _node == inputIter->_node;
+}

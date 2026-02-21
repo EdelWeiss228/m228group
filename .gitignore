@@ -1,0 +1,14 @@
+# Binaries
+tree_test
+debug_run
+exe
+*.o
+*.out
+
+# IDEs
+.vscode/
+.DS_Store
+
+# Temporary files
+*_debug.cpp
+Пример_использования_конструктора_и_деструктора_в_цикле.cpp
