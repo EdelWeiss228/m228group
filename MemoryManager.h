@@ -18,4 +18,5 @@ public:
     virtual void* allocMem(size_t sz) = 0;
 
     virtual void freeMem(void *ptr) = 0;
+    virtual ~MemoryManager() = default;
 };

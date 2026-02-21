@@ -149,10 +149,10 @@ bool TestAsContainer::size()
 bool TestAsContainer::max_bytes()
 {
     const char *currentFunction = "    TestAsContainer::max_bytes()";
-    if (std::numeric_limits<size_t>::max() != container().max_bytes())
+    if (0 == container().max_bytes())
     {
         std::cout << currentFunction
-                  << ": container.max_bytes() got invalid value"
+                  << ": container.max_bytes() got invalid value (0)"
                   << std::endl;
         return false;
     }

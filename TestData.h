@@ -40,7 +40,7 @@ struct Test
     }
 
 private:
-    Mem mem{std::numeric_limits<size_t>::max()};
+    Mem mem{1024 * 1024 * 10}; // 10 MB pool for tests
     Tree tree{mem};
 };
 
